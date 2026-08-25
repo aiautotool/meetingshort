@@ -3,8 +3,8 @@ import { Alert, FlatList, Modal, Platform, Pressable, SafeAreaView, StatusBar, S
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAudioPlayer, requestRecordingPermissionsAsync, setAudioModeAsync } from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
-import RNFS from 'react-native-fs';
 import { createRealtimeLocalTranscriber, transcribeLocalAudio } from './transcription';
+import { localWavPath } from './recording-path';
 
 const STORAGE_KEY = '@meeting_intelligence/meetings';
 const PEOPLE = ['KCT', 'Nam', 'Linh', 'Huy'];
@@ -74,7 +74,7 @@ export default function App() {
     const permission = await requestRecordingPermissionsAsync();
     if (!permission.granted) return Alert.alert('Cần quyền microphone', 'Hãy cấp quyền microphone để tạo transcript realtime.');
     const id = String(Date.now());
-    const rawPath = `${RNFS.DocumentDirectoryPath}/meeting-${id}.wav`;
+    const rawPath = localWavPath(id);
     try {
       await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true, shouldPlayInBackground: true });
       setLiveSegments([]); liveSegmentsRef.current = []; setLiveError(''); setElapsed(0); setPaused(false);
