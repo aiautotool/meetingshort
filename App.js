@@ -96,8 +96,10 @@ export default function App() {
       setRecording(true); setComposerOpen(false);
       timerRef.current = setInterval(() => setElapsed((value) => value + 1), 1000);
     } catch (error) {
-      setLiveError(error instanceof Error ? error.message : 'Không thể mở microphone realtime.');
-      Alert.alert('Không thể bắt đầu', 'Thiết bị không thể khởi tạo luồng audio PCM.');
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('Không thể khởi tạo transcript realtime:', error);
+      setLiveError(message);
+      Alert.alert('Không thể bắt đầu transcript', message || 'Thiết bị không thể khởi tạo luồng audio PCM.');
     }
   }
 

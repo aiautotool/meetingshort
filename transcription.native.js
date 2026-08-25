@@ -52,7 +52,15 @@ export async function transcribeLocalAudio(audioPath, onProgress) {
 // The microphone stream is PCM 16 kHz mono. Whisper receives it while recording,
 // then the same bytes are finalized as a local WAV file for replay.
 export async function createRealtimeLocalTranscriber({ audioPath, onTranscript, onError }) {
-  const [whisperContext, vadContext] = await Promise.all([getContext(), getVadContext()]);
+  const whisperContext = await getContext();
+  // Recording must remain available if the optional VAD model cannot initialize
+  // on a specific device. The final PhoWhisper pass still runs in that case.
+  let vadContext;
+  try {
+    vadContext = await getVadContext();
+  } catch (error) {
+    console.warn('VAD unavailable; continuing without realtime VAD.', error);
+  }
   const audioStream = new LivePcmAdapter();
   return new RealtimeTranscriber(
     { whisperContext, vadContext, audioStream, fs: RNFS },
