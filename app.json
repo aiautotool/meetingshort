@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Meeting Intelligence",
+    "slug": "meeting-intelligence",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kct.meetingintelligence",
+      "appleTeamId": "HU4E35954T",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Meeting Intelligence needs microphone access to record meetings."
+      }
+    },
+    "android": {
+      "package": "com.kct.meetingintelligence",
+      "permissions": [
+        "RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-audio"
+    ]
+  }
+}

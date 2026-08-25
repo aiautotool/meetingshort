@@ -1,0 +1,26 @@
+{
+  "name": "meeting-intelligence",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "web": "expo start --web",
+    "ios": "./scripts/build-install-ios.sh",
+    "android": "expo run:android"
+  },
+  "dependencies": {
+    "@fugood/react-native-audio-pcm-stream": "^1.1.4",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "buffer": "^6.0.3",
+    "expo": "latest",
+    "expo-audio": "~57.0.4",
+    "expo-file-system": "~57.0.5",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-fs": "^2.20.0",
+    "react-native-web": "^0.21.2",
+    "whisper.rn": "^0.7.3"
+  }
+}

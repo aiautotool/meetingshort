@@ -1,0 +1,3841 @@
+ AI Meeting Intelligence — Full BRD
+
+**Version:** 2.0  
+**Platforms:** iOS, Android  
+**Document:** Business Requirements + Product Requirements + UX/UI Mockup + Technical Architecture
+
+---
+
+## 1. Product Vision
+
+AI Meeting Intelligence là trợ lý AI có khả năng:
+
+- Lắng nghe cuộc họp.
+- Ghi âm ổn định trên iOS/Android.
+- Nâng cao chất lượng âm thanh.
+- Loại bỏ/giảm tiếng ồn không liên quan.
+- Nhận diện người nói.
+- Lưu Voice Profile.
+- Cho phép đổi tên Speaker về sau.
+- Tự nhận diện người đó ở các cuộc họp tiếp theo.
+- Chuyển giọng nói thành transcript.
+- Hiểu ngữ cảnh cuộc họp.
+- Liên kết với các cuộc họp trước.
+- Group theo Team / Project / Client / Topic.
+- Phát hiện mối quan hệ giữa các Team.
+- Theo dõi Decision, Action, Question, Risk.
+- Xây dựng long-term memory.
+- Cho phép hỏi AI về lịch sử họp.
+- Luôn cung cấp evidence cho các kết luận quan trọng.
+
+Sản phẩm không chỉ là:
+
+```text
+Audio → Transcript → Summary
+
+Mà là:
+
+Record
+  ↓
+Listen
+  ↓
+Enhance
+  ↓
+Identify
+  ↓
+Transcribe
+  ↓
+Understand
+  ↓
+Connect
+  ↓
+Remember
+  ↓
+Follow-up
+  ↓
+Act
+2. Problem Statement
+
+Các công cụ meeting note thông thường xử lý từng cuộc họp độc lập.
+
+Điều đó gây mất ngữ cảnh:
+
+Ai nói?
+Người đó là ai?
+Người đó thuộc team nào?
+Meeting này tiếp nối meeting nào?
+Decision hôm nay có thay decision cũ không?
+Ai chịu trách nhiệm?
+Deadline mới nhất là gì?
+Question từ meeting trước đã được giải quyết chưa?
+Team A có phụ thuộc Team B không?
+Project nào đang ảnh hưởng project nào?
+
+Ứng dụng phải xây dựng một lớp Meeting Memory liên tục.
+
+3. Goals
+P0
+Authentication.
+Workspace.
+Recording.
+Offline recording.
+Background recording.
+Audio enhancement.
+Noise suppression.
+Echo cancellation.
+Voice Activity Detection.
+Speaker diarization.
+Voice Profile.
+Speaker recognition.
+Unknown Speaker.
+Rename Speaker.
+Transcript.
+Timestamp.
+Summary.
+Key Points.
+Decisions.
+Action Items.
+Questions.
+Risks.
+Search.
+Export.
+Privacy.
+Consent.
+Retention.
+Delete.
+P1
+Team.
+Project.
+Meeting grouping.
+Historical context.
+Related meetings.
+Decision history.
+Action history.
+Semantic search.
+Ask AI.
+Knowledge Graph.
+Cross-team relationships.
+Long-term memory.
+Entity resolution.
+Pre-meeting briefing.
+Meeting goal.
+Goal outcome.
+AI correction.
+P2
+Live AI.
+Calendar.
+Documents.
+Jira.
+Linear.
+Slack.
+Microsoft Teams.
+Screen context.
+Advanced analytics.
+Enterprise administration.
+4. Non-goals
+
+Không tự động:
+
+Đánh giá hiệu suất nhân viên.
+Gửi email/tin nhắn ra ngoài nếu chưa được review.
+Merge người dùng khi confidence thấp.
+Gán owner/deadline nếu transcript không có evidence.
+Biến AI inference thành fact.
+Xóa nội dung chỉ vì relevance thấp.
+Thu thập voice data không có consent phù hợp.
+5. Target Users
+Individual
+Developer
+Designer
+Product Manager
+Manager
+Sales
+Consultant
+Freelancer
+Team
+Startup
+Software Team
+Product Team
+Marketing
+Sales
+Agency
+Project Team
+Enterprise
+Công ty nhiều phòng ban.
+Nhiều team.
+Nhiều project.
+Nhiều cuộc họp chéo team.
+6. Core Entities
+Workspace
+Person
+Voice Profile
+Team
+Project
+Meeting
+Transcript Segment
+Topic
+Decision
+Action Item
+Question
+Risk
+Document
+Memory
+Evidence
+Relationship
+
+Nguyên tắc:
+
+Entity
++
+Event
++
+Relationship
++
+Evidence
++
+Memory
+7. Main App Navigation
+Home
+Meetings
+Teams
+People
+Projects
+Search
+Settings
+
+Floating button:
+
++ New Meeting
+8. First Time Setup
+
+Flow:
+
+Install
+ ↓
+Account
+ ↓
+Create / Join Workspace
+ ↓
+Profile
+ ↓
+Microphone Permission
+ ↓
+Optional Voice Enrollment
+ ↓
+Audio Test
+ ↓
+Ready
+
+Optional permissions:
+
+Microphone.
+Notifications.
+Calendar.
+Bluetooth/audio devices.
+Files.
+
+Chỉ yêu cầu permission khi tính năng cần.
+
+9. Home Screen Mockup
+┌──────────────────────────────┐
+│ Good evening                 │
+│ KCT                          │
+│                              │
+│       [+ New Meeting]        │
+│                              │
+│ AI INSIGHTS                  │
+│ ⚠ 3 overdue tasks            │
+│ ⚠ 2 decisions changed        │
+│ 🔗 1 new team dependency     │
+│ ❓ 4 unresolved questions     │
+│                              │
+│ RECENT MEETINGS              │
+│ Sprint Planning              │
+│ Backend Review               │
+│ Product Meeting              │
+│                              │
+│ UPCOMING                     │
+│ Client Meeting · 14:00       │
+└──────────────────────────────┘
+10. New Meeting
+
+Fields:
+
+Meeting Title
+Meeting Type
+Primary Team
+Other Teams
+Project
+Participants
+Meeting Goal
+Language
+Speaker Recognition
+Historical Context
+Relevance Filtering
+
+Một meeting có thể thuộc:
+
+1 Primary Team
++
+N Collaborating Teams
++
+N Projects
+11. Meeting Types
+
+Built-in:
+
+1:1
+Standup
+Sprint Planning
+Design Review
+Client Meeting
+Sales
+Interview
+Brainstorm
+Retrospective
+Presentation
+Incident Review
+General
+Custom
+
+Meeting Type dùng để điều chỉnh AI extraction.
+
+Ví dụ Standup:
+
+Yesterday
+Today
+Blockers
+
+Retrospective:
+
+Went Well
+Problems
+Improvements
+Actions
+
+Client:
+
+Requirements
+Requests
+Commitments
+Deadline
+Commercial topics
+12. Meeting Goal
+
+Ví dụ:
+
+Goal:
+Finalize API architecture
+
+Sau meeting:
+
+Goal Outcome
+
+✓ Architecture selected
+✓ Owner assigned
+⚠ Security unresolved
+
+AI chỉ được đánh dấu hoàn thành khi transcript có evidence.
+
+13. Recording Flow
+Start Meeting
+ ↓
+Audio Capture
+ ↓
+Local Encrypted Storage
+ ↓
+Audio Enhancement
+ ↓
+VAD
+ ↓
+Speaker Diarization
+ ↓
+Speaker Recognition
+ ↓
+STT
+ ↓
+Context Analysis
+14. Recording Screen Mockup
+┌──────────────────────────────┐
+│ Sprint Planning              │
+│                              │
+│          🔴 32:18            │
+│       AUDIO WAVEFORM         │
+│                              │
+│ Speakers                     │
+│ 👤 KCT            42%        │
+│ 👤 Nam            31%        │
+│ 👤 Linh           18%        │
+│ ⚠ Unknown          9%        │
+│                              │
+│ Audio Quality: 87/100        │
+│                              │
+│ [ Pause ]       [ Stop ]     │
+└──────────────────────────────┘
+
+Phải có recording indicator rõ ràng.
+
+15. Offline Recording
+
+Recording phải hoạt động khi mất mạng.
+
+Microphone
+ ↓
+Local encrypted audio
+ ↓
+Chunk
+ ↓
+Save
+ ↓
+Network restored
+ ↓
+Upload
+ ↓
+Processing
+
+Trạng thái:
+
+LOCAL_ONLY
+PENDING_UPLOAD
+UPLOADING
+SYNCED
+PROCESSING
+COMPLETED
+FAILED
+16. Audio Chunking
+
+Không phụ thuộc vào một file duy nhất.
+
+meeting_001
+├── chunk_001
+├── chunk_002
+├── chunk_003
+└── ...
+
+Metadata:
+
+start_time
+end_time
+duration
+codec
+size
+checksum
+upload_status
+
+Yêu cầu:
+
+Auto save.
+Retry.
+Crash recovery.
+Resume.
+Không mất dữ liệu khi app crash.
+17. Audio Enhancement
+
+Pipeline:
+
+Raw Audio
+ ↓
+Noise Suppression
+ ↓
+Echo Cancellation
+ ↓
+Dereverberation
+ ↓
+Voice Activity Detection
+ ↓
+Speaker Processing
+
+Xử lý các nguồn:
+
+Quạt.
+Điều hòa.
+Tiếng xe.
+Tiếng gõ bàn phím.
+Echo.
+Room reverb.
+Silence.
+
+Không được coi tất cả âm thanh lớn là quan trọng.
+
+18. Relevance Filtering
+
+Mục tiêu:
+
+Giảm nội dung không liên quan nhưng không làm mất thông tin quan trọng.
+
+Pipeline:
+
+Audio
+ ↓
+Speech
+ ↓
+Speaker
+ ↓
+Context
+ ↓
+Relevance Score
+
+Ví dụ:
+
+"Cho tôi xin cái bút."
+→ Low relevance
+
+"API đang lỗi 500."
+→ Relevant
+
+"Deadline đổi sang thứ năm."
+→ Critical
+
+Low relevance nên:
+
+Mark as Low Relevance
+
+thay vì xóa ngay.
+
+User có thể:
+
+Keep
+Ignore
+Restore
+19. Speaker Diarization
+
+Diarization trả lời:
+
+Speaker ID nào đang nói?
+
+Ví dụ:
+
+00:00 Speaker A
+00:10 Speaker B
+00:25 Speaker A
+00:42 Speaker C
+
+Diarization không tự biết tên người.
+
+20. Speaker Recognition
+
+Pipeline:
+
+Speech
+ ↓
+Voice Activity
+ ↓
+Speaker Embedding
+ ↓
+Compare Voice Profiles
+ ↓
+Confidence
+ ↓
+Person / Unknown
+
+Ví dụ:
+
+KCT       96%
+Nam       94%
+Linh      41%
+Unknown   22%
+
+Nếu confidence thấp:
+
+Unknown Speaker
+
+Không ép nhận diện.
+
+21. Voice Profile
+
+Person:
+
+Person
+├── Name
+├── Avatar
+├── Voice Embeddings
+├── Voice Samples
+├── Recognition Statistics
+└── Meeting History
+
+UI:
+
+NAM
+
+Recognition: 94%
+Samples: 27
+Meetings: 14
+
+[Add Voice Sample]
+[Test Voice]
+[Edit]
+[Delete]
+22. Voice Enrollment
+Cách 1 — Chủ động
+
+User đọc mẫu khoảng 10–20 giây.
+
+Cách 2 — Từ Meeting
+
+Sau meeting:
+
+Speaker 2
+
+[Who is this?]
+
+→ Nam
+
+☑ Learn this voice
+
+Chỉ tạo/cập nhật Voice Profile khi có consent phù hợp.
+
+23. Speaker Rename
+
+User có thể đổi:
+
+Speaker 2
+→ Nguyễn Văn Nam
+
+Correction phải cập nhật:
+
+Transcript
+Participant
+Search
+Knowledge Graph
+Meeting History
+
+Không tự thay đổi Voice Profile nếu user chưa xác nhận.
+
+24. Unknown Speaker
+
+Unknown có thể là:
+
+Người tham dự chưa có profile.
+Người ngoài.
+Người nói qua điện thoại.
+Người có audio quá kém.
+
+Unknown ≠ irrelevant.
+
+25. Overlapping Speech
+
+Nếu hai người nói đồng thời:
+
+Speaker A ──────────
+          └──── Speaker B ─────
+
+Hệ thống cần:
+
+Detect overlap.
+Segment.
+Mark overlap.
+Giảm confidence.
+Không tự merge hai người.
+26. Transcript
+
+Segment:
+
+id
+meeting_id
+speaker_id
+speaker_name
+start_time
+end_time
+text
+confidence
+relevance
+language
+overlap
+audio_reference
+
+UI:
+
+10:32
+👤 KCT
+Deadline sẽ là thứ sáu.
+
+10:34
+👤 Nam
+OK, tôi phụ trách backend.
+
+10:36
+⚠ Unknown
+API này có vấn đề.
+
+Click transcript:
+
+→ Play exact audio
+27. Multi-language
+
+Hỗ trợ:
+
+Vietnamese.
+English.
+Vietnamese + English.
+Code switching.
+
+Ví dụ:
+
+API này mình sẽ deploy production vào Friday.
+
+Language có thể được xác định theo segment.
+
+28. AI Meeting Analysis
+
+Input:
+
+Transcript
+Speaker identities
+Teams
+Projects
+Meeting type
+Meeting goal
+Historical meetings
+Documents
+Memory
+
+Output:
+
+Summary
+Key Points
+Topics
+Decisions
+Action Items
+Questions
+Risks
+Dependencies
+Changes
+Goal Outcome
+29. Historical Context
+
+Meeting mới không được xử lý độc lập.
+
+Current Meeting
+ ↓
+Extract Entities
+ ↓
+Search Historical Knowledge
+ ↓
+Find Related Meetings
+ ↓
+Retrieve Relevant Segments
+ ↓
+Build Context
+ ↓
+AI Analysis
+
+Không gửi toàn bộ lịch sử vào LLM.
+
+Chỉ retrieve context liên quan.
+
+30. Related Meetings
+
+Relationship:
+
+FOLLOW_UP
+CONTINUES
+REFERENCES
+RELATED
+DEPENDS_ON
+CONTRADICTS
+REPLACES
+
+Mỗi relationship:
+
+confidence
+reason
+evidence
+source meeting
+timestamp
+31. Meeting Grouping
+
+Có thể group theo:
+
+Team
+Project
+Client
+Topic
+Meeting Type
+Time
+Custom Collection
+
+Một meeting có thể nằm trong nhiều group.
+
+32. Team Model
+
+Ví dụ:
+
+Meeting
+├── Mobile Team
+├── Backend Team
+└── Product Team
+
+Một project có thể có nhiều team.
+
+Một team có thể tham gia nhiều project.
+
+33. Cross-Team Relationship
+
+Relationship:
+
+COLLABORATES_WITH
+DEPENDS_ON
+REPORTS_TO
+SUPPORTS
+SHARES_PROJECT
+
+Ví dụ:
+
+Mobile Team
+     ↓ DEPENDS_ON
+Backend Team
+
+AI phải cung cấp:
+
+Confidence
+Reason
+Evidence
+
+User:
+
+[Confirm]
+[Ignore]
+34. Project
+
+Project gồm:
+
+Name
+Description
+Teams
+People
+Meetings
+Topics
+Decisions
+Actions
+Questions
+Risks
+Dependencies
+Documents
+
+Mockup:
+
+MOBILE APP
+
+Teams        Mobile / Backend / QA
+Meetings     42
+Topics       28
+Decisions    31
+Tasks        18
+Risks         4
+Questions     7
+35. Decision
+
+Schema:
+
+Decision
+├── content
+├── status
+├── created_at
+├── created_by
+├── source_meeting
+├── timestamp
+├── evidence
+└── related_decisions
+
+Status:
+
+ACTIVE
+CHANGED
+REPLACED
+CANCELLED
+COMPLETED
+36. Decision History
+
+Ví dụ:
+
+Aug 22
+Deadline = Aug 28
+
+↓ changed
+
+Aug 25
+Deadline = Aug 30
+
+UI:
+
+⚠ Decision Changed
+
+API deadline
+Aug 28 → Aug 30
+
+Source:
+Sprint Planning · Aug 25
+10:32
+
+Current state phải tách khỏi history.
+
+37. Action Item
+
+Fields:
+
+Owner
+Description
+Due Date
+Priority
+Status
+Source Meeting
+Timestamp
+Project
+Team
+Evidence
+
+Lifecycle:
+
+CREATED
+→ ASSIGNED
+→ IN_PROGRESS
+→ COMPLETED
+
+Alternative:
+
+CREATED
+→ OVERDUE
+→ DISCUSSED
+→ DEADLINE_CHANGED
+38. Question / Parking Lot
+Question
+├── Content
+├── Status
+├── Created Meeting
+├── Topic
+├── Resolved Meeting
+└── Evidence
+
+Status:
+
+OPEN
+IN_DISCUSSION
+RESOLVED
+CANCELLED
+
+AI phải tìm meeting sau để xem question đã được giải quyết chưa.
+
+39. Risk Detection
+
+Ví dụ:
+
+⚠ Risk
+
+Login API discussed in 4 meetings
+without completion.
+
+Evidence:
+Aug 20
+Aug 22
+Aug 24
+Aug 25
+
+Phải phân biệt:
+
+FACT
+AI_INFERENCE
+UNCERTAINTY
+40. Pre-Meeting Briefing
+
+Trước meeting:
+
+Previous Meetings
+Open Actions
+Overdue Actions
+Open Questions
+Latest Decisions
+Changed Decisions
+Relevant Documents
+Risks
+Participants
+
+Ví dụ:
+
+MEETING BRIEF
+
+3 unresolved items from last meeting.
+2 decisions changed.
+1 action overdue.
+
+Suggested topics:
+1. Login API
+2. Security
+3. Deployment deadline
+41. Live Meeting Assistant
+
+Realtime detection:
+
+Decision detected
+Action detected
+Question detected
+Deadline detected
+Risk detected
+Topic change
+
+Ví dụ:
+
+✨ ACTION ITEM
+
+Nam → Fix Login API
+Due → Friday
+
+[Confirm]
+[Edit]
+[Ignore]
+42. Post Meeting
+Meeting
+ ↓
+Summary
+ ↓
+Decisions
+ ↓
+Actions
+ ↓
+Questions
+ ↓
+Risks
+ ↓
+Related Meetings
+ ↓
+Memory
+
+User có thể review trước khi publish/sync.
+
+43. Memory
+
+Không phải transcript nào cũng trở thành long-term memory.
+
+Types:
+
+TEMPORARY
+MEETING
+PROJECT
+TEAM
+PERSON
+ORGANIZATION
+
+Ví dụ:
+
+Deploy API Friday
+→ Project Memory
+
+Backend phụ thuộc Mobile
+→ Team/Project Memory
+
+Nam phụ trách API
+→ Person + Project Memory
+
+User controls:
+
+Remember
+Don't Remember
+Edit
+Delete
+44. Memory Conflict
+
+Ví dụ:
+
+Meeting 1: Friday
+Meeting 2: Monday
+Meeting 3: Wednesday
+
+Current state:
+
+Deploy: Wednesday
+
+History vẫn giữ:
+
+Friday → Monday → Wednesday
+
+Không dùng giá trị cũ làm current fact.
+
+45. Entity Resolution
+
+Có thể gặp:
+
+Nam
+Anh Nam
+N. Nguyen
+Nguyễn Văn Nam
+
+Hệ thống đề xuất:
+
+Possible same person
+
+[Merge]
+[Keep Separate]
+
+Không auto merge khi confidence thấp.
+
+Tương tự:
+
+Mobile
+Mobile Team
+App Team
+Mobile App Team
+46. People Intelligence
+
+Person page:
+
+NAM
+
+Teams
+Backend
+
+Projects
+Mobile App
+API Platform
+
+Meetings
+14
+
+Open Tasks
+4
+Completed Tasks
+21
+
+Voice Recognition
+94%
+
+AI query:
+
+Nam đã cam kết gì trong 2 tuần qua?
+47. Team Dashboard
+MOBILE TEAM
+
+Members          8
+Meetings        34
+Projects         4
+
+Open Tasks      12
+Overdue          3
+
+Decisions       27
+Questions        6
+
+Dependencies
+→ Backend
+→ Product
+48. Project Dashboard
+MOBILE APP
+
+Teams
+Mobile / Backend / Product / QA
+
+Meetings 42
+Topics 28
+Decisions 31
+Tasks 18
+Risks 4
+Dependencies 3
+Open Questions 7
+49. Search
+
+Hỗ trợ:
+
+Keyword
+API
+deadline
+Nam
+Mobile
+Semantic
+Ai phụ trách backend?
+Decision nào đã thay đổi?
+Những meeting nào nói về release deadline?
+Time-aware
+API trong tháng này
+Deadline trong 30 ngày
+Nam nói gì trong tuần này?
+Entity-aware
+Nam + Mobile + API
+50. Ask AI
+
+Ví dụ:
+
+Tại sao project Mobile App trễ?
+
+AI:
+
+Deadline bị ảnh hưởng bởi Login API.
+
+Evidence:
+
+1. Backend Review — Aug 24
+   Login API chưa hoàn thành.
+
+2. Mobile Meeting — Aug 24
+   Mobile đang chờ API.
+
+3. Sprint Planning — Aug 25
+   Deadline Aug 28 → Aug 30.
+
+Mỗi evidence:
+
+View Meeting
+Go to Timestamp
+Play Audio
+51. Evidence System
+
+Mọi insight quan trọng phải có source.
+
+Classification:
+
+FACT
+USER_CONFIRMED
+AI_INFERENCE
+UNCERTAIN
+
+Không có evidence thì không được trình bày inference như fact.
+
+52. AI Correction
+
+Mỗi output:
+
+Correct
+Incorrect
+Edit
+
+Ví dụ:
+
+AI:
+Nam owns Login API
+
+User:
+Change → KCT
+
+User-confirmed data có priority cao hơn AI-generated data.
+
+53. Knowledge Graph
+Person
+ ↕
+Team
+ ↕
+Project
+ ↕
+Meeting
+ ↕
+Topic
+ ↕
+Decision
+ ↕
+Action
+
+Relationship:
+
+Meeting A
+├── RELATED → Meeting B
+├── REFERENCES → Decision C
+├── CREATES → Action D
+└── CONTINUES → Meeting E
+54. Knowledge Graph UI
+                 Product
+                    │
+                    ↓
+                Mobile App
+               /     |     \
+          Mobile   Backend    QA
+              \      /
+               \    /
+              Login API
+                  │
+                  ↓
+               Decision
+                  │
+                  ↓
+                 Nam
+
+Actions:
+
+Zoom.
+Pan.
+Click.
+Inspect.
+View evidence.
+Jump transcript.
+Play audio.
+55. Audio Source Handling
+
+Ưu tiên:
+
+Built-in microphone.
+Wired/USB microphone.
+Bluetooth headset.
+External microphone where supported.
+Conference room source where OS permits.
+
+App phải hiển thị audio route.
+
+Không đảm bảo thu được audio từ các app khác nếu OS hạn chế.
+
+56. Background / Lock Screen
+
+Yêu cầu:
+
+Recording khi app chạy nền.
+Recording khi screen lock nếu OS cho phép.
+Persistent recording indicator.
+Auto-save.
+Recovery.
+57. Calendar Integration
+
+Phase 2:
+
+Google Calendar
+Apple Calendar
+Outlook
+
+Flow:
+
+Calendar Event
+→ Suggested Meeting
+→ Pre-Meeting Brief
+→ Record
+→ Analyze
+→ Follow-up
+58. Task Integration
+
+Phase 2:
+
+Jira
+Linear
+Asana
+Trello
+
+Flow:
+
+Action Item
+→ User Confirm
+→ Create Task
+59. Communication Integration
+
+Phase 2:
+
+Slack
+Microsoft Teams
+Email
+
+Không tự gửi nếu chưa review.
+
+60. Document Context
+
+Documents:
+
+PDF
+DOCX
+PPTX
+TXT
+Markdown
+
+Meeting có thể link documents.
+
+AI có thể trả lời:
+
+Decision trong meeting có khác PRD không?
+
+Phải hiển thị source document + meeting evidence.
+
+61. Screen Context
+
+Phase 3.
+
+Có thể hỗ trợ:
+
+Presentation.
+Design review.
+Product demo.
+Coding session.
+
+Chỉ khi OS, permission và privacy cho phép.
+
+62. Notification
+Meeting upcoming.
+Processing completed.
+Action due.
+Action overdue.
+Decision changed.
+Question resolved.
+Related meeting found.
+Potential dependency found.
+
+Cho phép user cấu hình.
+
+63. Security & Privacy
+
+Dữ liệu nhạy cảm:
+
+Audio.
+Transcript.
+Voice Profile.
+Voice Embedding.
+Meeting data.
+Team/project data.
+Documents.
+
+Yêu cầu:
+
+TLS
+Encryption at Rest
+Encrypted Local Storage
+Secure Key Storage
+Authentication
+Authorization
+RBAC
+Workspace Isolation
+Audit Logs
+Secure Upload
+Delete Workflow
+Backup Policy
+
+iOS:
+
+Keychain.
+Secure Enclave khi phù hợp.
+
+Android:
+
+Android Keystore.
+
+Không ghi voice embedding/audio vào debug logs.
+
+64. Consent
+
+Trước recording phải có indicator rõ ràng.
+
+Voice enrollment phải có consent.
+
+Enterprise cần policy:
+
+Who can record?
+Who can view?
+Who can access voice profile?
+How long retained?
+Who can delete?
+
+Luật về ghi âm và nhận diện giọng nói khác nhau theo quốc gia; sản phẩm phải có legal/compliance review trước khi triển khai từng thị trường.
+
+65. Retention
+
+Có thể cấu hình:
+
+Audio:
+30 days / 90 days / Forever
+
+Transcript:
+Custom / Forever
+
+Voice Profile:
+Until deleted
+
+AI Memory:
+Custom
+
+Có thể:
+
+Delete audio
+but keep transcript.
+66. Workspace Roles
+Owner
+Admin
+Member
+Viewer
+
+Permissions:
+
+Record.
+View meeting.
+View audio.
+Edit transcript.
+Manage Voice Profile.
+Manage team.
+Manage project.
+Export.
+Delete.
+Manage integrations.
+
+Voice permissions phải có control riêng.
+
+67. Data Model
+users
+workspaces
+workspace_members
+
+people
+voice_profiles
+voice_samples
+
+teams
+team_members
+team_relationships
+
+projects
+project_teams
+
+meetings
+meeting_participants
+meeting_relationships
+
+audio_files
+audio_chunks
+audio_processing_jobs
+
+transcripts
+transcript_segments
+
+topics
+meeting_topics
+
+decisions
+decision_history
+
+action_items
+action_item_history
+
+questions
+question_history
+
+risks
+
+entities
+entity_relationships
+
+documents
+meeting_documents
+
+ai_insights
+ai_sources
+
+memory_items
+memory_history
+
+integrations
+calendar_events
+68. Meeting Relationship Schema
+id
+source_meeting_id
+target_meeting_id
+type
+confidence
+reason
+evidence_ids
+created_by
+created_at
+69. Memory Schema
+id
+workspace_id
+entity_type
+entity_id
+memory_type
+content
+status
+confidence
+source_ids
+created_at
+updated_at
+expires_at
+70. Recommended Mobile Stack
+Option A — Flutter
+
+Recommended for shared UI/business logic.
+
+Native modules for:
+
+Audio session.
+Background recording.
+Bluetooth.
+Low-level audio.
+OS permissions.
+Secure storage.
+Option B — Native
+
+iOS:
+
+Swift
+SwiftUI / UIKit
+AVFoundation
+Speech/audio native APIs as appropriate.
+
+Android:
+
+Kotlin
+Jetpack Compose
+AudioRecord / Media APIs as appropriate.
+
+Native is preferable if audio reliability becomes the dominant requirement.
+
+71. Backend
+
+Recommended:
+
+Python
+FastAPI
+PostgreSQL
+Redis
+Object Storage
+Queue
+Vector Database
+
+Services:
+
+Auth
+Workspace
+Meeting
+Audio
+Speaker
+STT
+AI
+Context Retrieval
+Knowledge Graph
+Memory
+Search
+Integration
+Notification
+72. AI Pipeline
+Audio Capture
+ ↓
+Audio Enhancement
+ ↓
+VAD
+ ↓
+Diarization
+ ↓
+Speaker Embedding
+ ↓
+Speaker Recognition
+ ↓
+STT
+ ↓
+Relevance Classification
+ ↓
+Entity Extraction
+ ↓
+Historical Retrieval
+ ↓
+LLM Analysis
+ ↓
+Evidence Linking
+ ↓
+Memory Update
+ ↓
+Knowledge Graph Update
+73. Processing States
+DRAFT
+RECORDING
+PAUSED
+STOPPED
+UPLOADING
+PROCESSING_AUDIO
+DIARIZING
+IDENTIFYING_SPEAKERS
+TRANSCRIBING
+RETRIEVING_CONTEXT
+ANALYZING
+BUILDING_RELATIONSHIPS
+UPDATING_MEMORY
+REVIEW_REQUIRED
+COMPLETED
+FAILED
+ARCHIVED
+DELETED
+74. Search Architecture
+
+Transcript được chunk:
+
+Transcript
+ ↓
+Chunk
+ ↓
+Embedding
+ ↓
+Vector DB
+
+Metadata:
+
+meeting_id
+segment_id
+speaker_id
+team
+project
+date
+topic
+language
+timestamp
+
+Search:
+
+Keyword
++
+Semantic
++
+Metadata
++
+Time
++
+Entity
+75. Performance Requirements
+
+Target:
+
+App mở nhanh.
+Recording start gần như tức thời.
+Không drop audio do UI rendering.
+Audio chunk được persist trước khi xử lý.
+UI không block khi upload/process.
+Processing có progress.
+Large meeting phải xử lý async.
+Search trả kết quả theo pagination.
+AI response streaming nếu backend hỗ trợ.
+76. Reliability
+
+Phải xử lý:
+
+App crash.
+OS kill process.
+Network lost.
+Server timeout.
+Upload retry.
+Duplicate upload.
+Partial processing.
+AI provider failure.
+STT failure.
+Speaker recognition failure.
+
+Không được mất recording chỉ vì AI processing fail.
+
+77. Observability
+
+Metrics:
+
+recording_failures
+audio_drop_rate
+upload_failures
+stt_latency
+diarization_latency
+speaker_match_confidence
+processing_latency
+ai_failure_rate
+search_latency
+sync_failures
+
+Không log:
+
+Raw audio.
+Full transcript.
+Voice embedding.
+Secrets.
+78. Testing
+Mobile
+Unit.
+Widget/UI.
+Integration.
+Background recording.
+Lock screen.
+Permission.
+Bluetooth.
+Offline.
+Crash recovery.
+AI
+
+Dataset phải test:
+
+1 speaker.
+2 speakers.
+N speakers.
+Accent.
+Vietnamese.
+English.
+Code switching.
+Noise.
+Echo.
+Overlap.
+Low volume.
+Unknown speakers.
+Security
+Authorization.
+Workspace isolation.
+Data deletion.
+Export.
+Encryption.
+Token security.
+79. Acceptance Criteria
+Recording
+iOS record ổn định.
+Android record ổn định.
+Pause/resume.
+Background.
+Lock screen khi OS cho phép.
+Offline.
+Auto-save.
+Crash recovery.
+Retry upload.
+Không mất audio khi network mất.
+Speaker
+Diarization.
+Recognition.
+Enrollment.
+Rename.
+Unknown.
+Correction.
+Consent.
+Overlap handling.
+Transcript
+Timestamp.
+Speaker.
+Confidence.
+Relevance.
+Language.
+Audio playback.
+AI
+Summary.
+Topics.
+Decisions.
+Actions.
+Questions.
+Risks.
+Goal outcome.
+Historical context.
+Related meetings.
+Decision changes.
+Memory.
+Knowledge
+People.
+Teams.
+Projects.
+Relationships.
+Graph.
+Search.
+Ask AI.
+Evidence.
+Privacy
+Encryption.
+Consent.
+Retention.
+Delete.
+Export.
+Account deletion.
+Audit.
+80. Final Product Flow
+USER
+ ↓
+NEW MEETING
+ ↓
+SET TEAM / PROJECT / GOAL
+ ↓
+RECORD
+ ↓
+LOCAL ENCRYPTED STORAGE
+ ↓
+AUDIO ENHANCEMENT
+ ↓
+VAD
+ ↓
+DIARIZATION
+ ↓
+VOICE IDENTIFICATION
+ ↓
+RELEVANCE DETECTION
+ ↓
+TRANSCRIPT
+ ↓
+HISTORICAL RETRIEVAL
+ ↓
+AI CONTEXT ENGINE
+ ↓
+SUMMARY
+ ↓
+TOPICS
+ ↓
+DECISIONS
+ ↓
+ACTIONS
+ ↓
+QUESTIONS
+ ↓
+RISKS
+ ↓
+EVIDENCE
+ ↓
+MEMORY
+ ↓
+KNOWLEDGE GRAPH
+ ↓
+TEAM / PROJECT RELATIONSHIPS
+ ↓
+SEARCH / ASK AI
+ ↓
+FOLLOW-UP
+81. Long-term Product Moat
+
+Không phải recorder.
+
+Không phải transcript.
+
+Không phải LLM.
+
+Moat:
+
+Voice Identity
++
+Meeting History
++
+Entity Resolution
++
+Decision History
++
+Action History
++
+Team Relationships
++
+Project Context
++
+Knowledge Graph
++
+Long-term Memory
++
+Evidence
+
+Sau nhiều tháng/năm, hệ thống có thể trả lời:
+
+Tại sao project này trễ?
+Ai đã cam kết việc này?
+Decision này bắt đầu từ meeting nào?
+Decision hiện tại đã thay đổi bao nhiêu lần?
+Team nào phụ thuộc Backend?
+Nam đã nói gì về Mobile App trong 30 ngày qua?
+Câu hỏi này đã được giải quyết chưa?
+Meeting hôm nay cần follow-up những gì từ meeting trước?
+Tại sao deadline thay đổi?
+Những project nào đang cùng phụ thuộc một team?
+82. MVP Delivery Order
+1. Project foundation
+2. Authentication / Workspace
+3. Audio recording
+4. Offline storage
+5. Audio processing
+6. STT
+7. Diarization
+8. Voice Profile
+9. Speaker Recognition
+10. Transcript UI
+11. Summary
+12. Decision / Action / Question / Risk
+13. Meeting history
+14. Team / Project
+15. Related Meeting
+16. Historical Context
+17. Search
+18. Ask AI
+19. Memory
+20. Knowledge Graph
+21. Integrations
+83. Product Principle
+
+Record once → Understand automatically → Remember continuously → Connect across meetings → Keep evidence → Keep the user in control.
+
+
+
+BRD — AI Meeting Intelligence Platform
+
+Version: 1.0
+Platform: iOS / Android
+Product: AI Meeting Recorder + Speaker Recognition + Meeting Memory + Team Knowledge Graph
+
+1. Tổng quan
+
+AI Meeting Intelligence là ứng dụng trợ lý cuộc họp có khả năng:
+
+Ghi âm cuộc họp.
+Làm sạch âm thanh.
+Nhận diện các đoạn có giọng nói.
+Tách từng người nói.
+Nhận diện người nói dựa trên Voice Profile.
+Loại bỏ hoặc giảm nội dung từ người không liên quan.
+Chuyển giọng nói thành văn bản.
+Hiểu ngữ cảnh cuộc họp.
+Đối chiếu với các cuộc họp trước.
+Phát hiện cuộc họp liên quan.
+Group cuộc họp theo Team / Project / Topic.
+Xây dựng quan hệ giữa các Team.
+Theo dõi Decision qua nhiều cuộc họp.
+Theo dõi Action Item từ lúc tạo đến khi hoàn thành.
+Phát hiện thay đổi về deadline / quyết định.
+Tự động tạo Summary.
+Trả lời câu hỏi dựa trên toàn bộ lịch sử họp.
+Tạo Knowledge Graph của tổ chức.
+Product Vision
+              RECORD
+                 ↓
+              LISTEN
+                 ↓
+             UNDERSTAND
+                 ↓
+             REMEMBER
+                 ↓
+             CONNECT
+                 ↓
+             FOLLOW UP
+                 ↓
+              ACT
+2. Vấn đề cần giải quyết
+
+Các ứng dụng ghi âm / transcript thông thường chỉ làm:
+
+Audio → Text
+
+Trong thực tế, người dùng cần:
+
+Audio
+ ↓
+Ai đang nói?
+ ↓
+Người đó thuộc team nào?
+ ↓
+Đang nói về project nào?
+ ↓
+Nội dung liên quan cuộc họp nào trước đó?
+ ↓
+Đã quyết định gì?
+ ↓
+Quyết định có thay đổi không?
+ ↓
+Ai phải làm gì?
+ ↓
+Deadline?
+ ↓
+Đã hoàn thành chưa?
+ ↓
+Ảnh hưởng đến team/project nào?
+3. Mục tiêu sản phẩm
+Mục tiêu chính
+
+Biến toàn bộ cuộc họp thành nguồn dữ liệu có cấu trúc và có liên kết theo thời gian.
+
+KPI sản phẩm
+Tỷ lệ transcript có thể sử dụng.
+Speaker identification accuracy.
+Tỷ lệ Action Item được phát hiện đúng.
+Tỷ lệ Decision được phát hiện đúng.
+Tỷ lệ liên kết Meeting đúng.
+Tỷ lệ nhận diện Team/Project đúng.
+Thời gian xử lý một cuộc họp.
+Tỷ lệ người dùng quay lại sử dụng.
+Số meeting được liên kết thành knowledge graph.
+4. Đối tượng người dùng
+Individual
+Developer
+Designer
+Product Manager
+Manager
+Sales
+Consultant
+Freelancer
+Team
+Startup
+Software team
+Marketing
+Sales
+Agency
+Project team
+Enterprise
+Công ty nhiều phòng ban.
+Nhiều project.
+Nhiều cuộc họp chéo team.
+5. Concept tổng thể
+WORKSPACE
+│
+├── Teams
+│    ├── Product
+│    ├── Mobile
+│    ├── Backend
+│    └── Sales
+│
+├── People
+│    ├── KCT
+│    ├── Nam
+│    └── Linh
+│
+├── Projects
+│    ├── Mobile App
+│    ├── API Platform
+│    └── CRM
+│
+└── Meetings
+     ├── Sprint Planning
+     ├── Backend Review
+     ├── Product Meeting
+     └── Client Meeting
+6. Core User Flow
+Login
+ ↓
+Workspace
+ ↓
+New Meeting
+ ↓
+Meeting Setup
+ ↓
+Select Team
+ ↓
+Select Project
+ ↓
+Select Participants
+ ↓
+Speaker Setup
+ ↓
+Start Recording
+ ↓
+Audio Processing
+ ↓
+Speaker Diarization
+ ↓
+Speaker Recognition
+ ↓
+Relevance Filtering
+ ↓
+Speech-to-Text
+ ↓
+Historical Context Retrieval
+ ↓
+Meeting Relationship Detection
+ ↓
+AI Analysis
+ ↓
+Human Review
+ ↓
+Save Meeting
+ ↓
+Update Knowledge Graph
+7. Main Navigation
+Home
+Meetings
+Teams
+People
+Search
+Settings
+
+Floating action:
+
+          ＋
+       New Meeting
+8. Home Dashboard
+
+Home phải hiển thị intelligence, không chỉ danh sách meeting.
+
+┌─────────────────────────────┐
+│ Good evening, KCT 👋        │
+│                             │
+│ [+ New Meeting]             │
+│                             │
+│ AI INSIGHTS                 │
+│                             │
+│ ⚠️ 3 overdue tasks          │
+│ ⚠️ 2 decisions changed      │
+│ 🔗 1 new team dependency    │
+│                             │
+│ RECENT MEETINGS              │
+│                             │
+│ Sprint Planning             │
+│ Backend Review              │
+│ Product Meeting             │
+│                             │
+│ UPCOMING                    │
+│ Client Meeting · 14:00      │
+└─────────────────────────────┘
+9. New Meeting
+┌─────────────────────────────┐
+│ New Meeting                 │
+│                             │
+│ Title                       │
+│ [ Sprint Planning ]         │
+│                             │
+│ Team                        │
+│ [ Mobile Team ]             │
+│                             │
+│ Project                     │
+│ [ Mobile App ]              │
+│                             │
+│ Participants                │
+│ [ KCT · Nam · Linh ]        │
+│                             │
+│ Language                    │
+│ [ Vietnamese ]              │
+│                             │
+│ Speaker recognition     ON  │
+│ Relevance filtering     ON  │
+│ Historical context      ON  │
+│                             │
+│ [ Start Meeting ]           │
+└─────────────────────────────┘
+10. Team Selection
+
+Một meeting có thể có nhiều team.
+
+Teams
+
+☑ Mobile Team
+☑ Backend Team
+☐ Product Team
+☐ Sales Team
+
+Primary team:
+
+Primary Team
+[ Mobile Team ]
+
+Các team còn lại:
+
+Participants / Collaborating Teams
+11. Project Selection
+
+Một meeting có thể liên quan:
+
+Projects
+
+☑ Mobile App
+☑ API Platform
+☐ CRM
+
+AI có thể tự đề xuất:
+
+AI detected:
+
+Mobile App
+API Platform
+
+[ Confirm ]
+12. Recording
+┌─────────────────────────────┐
+│ Sprint Planning             │
+│                             │
+│          🔴 32:18           │
+│                             │
+│     ╱╲╱╲╱╲╱╲╱╲╱╲            │
+│                             │
+│ Speakers                    │
+│                             │
+│ 👤 KCT       42%             │
+│ 👤 Nam       31%             │
+│ 👤 Linh      18%             │
+│ ⚠️ Unknown    9%             │
+│                             │
+│ [ Pause ]    [ Stop ]       │
+└─────────────────────────────┘
+13. Audio Processing
+
+Pipeline:
+
+Microphone
+ ↓
+Audio Capture
+ ↓
+Noise Suppression
+ ↓
+Echo Cancellation
+ ↓
+Dereverberation
+ ↓
+Voice Activity Detection
+ ↓
+Speaker Diarization
+ ↓
+Speaker Embedding
+
+Xử lý:
+
+Background noise.
+Fan.
+Air conditioner.
+Traffic.
+Keyboard.
+Echo.
+Room reverberation.
+Silence.
+14. Speaker Diarization
+
+Hệ thống xác định:
+
+00:00–00:10 → Speaker A
+00:10–00:25 → Speaker B
+00:25–00:42 → Speaker A
+00:42–00:51 → Speaker C
+
+Không cần biết danh tính ngay ở bước này.
+
+15. Voice Profile
+
+Voice Profile là lớp nhận diện lâu dài.
+
+Person
+│
+├── Name
+├── Avatar
+├── Voice Embeddings
+├── Voice Samples
+├── Recognition Statistics
+└── Meetings
+
+Ví dụ:
+
+Nam
+
+Voice Profile
+Recognition: 94%
+Samples: 27
+Meetings: 14
+
+[ Add Voice Sample ]
+[ Test Voice ]
+[ Edit ]
+[ Delete ]
+16. Voice Enrollment
+
+Có thể đăng ký giọng nói bằng:
+
+Cách 1
+
+Người dùng đọc một đoạn mẫu 10–20 giây.
+
+Cách 2
+
+Sau meeting:
+
+Speaker 2 → Nam
+
+Người dùng xác nhận:
+
+☑ Learn this voice
+
+Hệ thống có thể dùng đoạn đã xác nhận để bổ sung profile theo policy.
+
+17. Speaker Recognition
+Speaker embedding
+        ↓
+Compare Voice Profiles
+        ↓
+Similarity
+        ↓
+Identity
+
+Ví dụ:
+
+KCT       96%
+Nam       94%
+Linh      41%
+Unknown   22%
+
+Nếu không đủ confidence:
+
+⚠️ Unknown Speaker
+
+[ Identify ]
+
+Không ép AI nhận diện khi không chắc.
+
+18. Unknown Speaker
+
+Unknown không đồng nghĩa với irrelevant.
+
+Pipeline:
+
+Unknown Speaker
+      ↓
+Relevance Detection
+      ↓
+┌─────────────┬─────────────┐
+│ Relevant    │ Irrelevant  │
+│     ↓       │      ↓      │
+│   KEEP      │    DROP     │
+└─────────────┴─────────────┘
+19. Relevance AI
+
+Ví dụ:
+
+Không liên quan
+
+"Cho tôi xin cái bút."
+
+IRRELEVANT
+Có liên quan
+
+"API này đang lỗi 500."
+
+RELEVANT
+Không chắc
+
+"Deadline phải đổi sang thứ năm."
+
+REVIEW
+
+UI:
+
+⚠️ Unknown Speaker
+
+"Deadline phải đổi sang thứ năm."
+
+[ Keep ] [ Ignore ] [ Identify ]
+20. Transcript
+
+Mỗi segment:
+
+timestamp
+speaker
+speaker_id
+text
+confidence
+relevance
+audio_reference
+
+UI:
+
+10:32
+
+👤 KCT
+Deadline sẽ là thứ sáu.
+
+10:34
+
+👤 Nam
+OK, tôi phụ trách backend.
+
+10:36
+
+⚠️ Unknown
+API này có vấn đề.
+
+Click segment:
+
+▶ Play audio
+21. Speaker Editing
+
+Người dùng có thể:
+
+Speaker 2
+ ↓
+[ Nam ]
+
+Sau khi sửa:
+
+Transcript update.
+Search update.
+Meeting participants update.
+Voice Profile có thể được cập nhật nếu user cho phép.
+22. AI Meeting Analysis
+
+Input:
+
+Transcript
++
+Speaker
++
+Team
++
+Project
++
+Meeting history
++
+Related meetings
+
+Output:
+
+Summary
+Key Points
+Decisions
+Action Items
+Questions
+Risks
+Changes
+Dependencies
+23. Historical Context Engine
+
+Đây là core feature.
+
+Meeting mới không được xử lý độc lập.
+
+Current Meeting
+       ↓
+Extract entities
+       ↓
+Search historical knowledge
+       ↓
+Find related meetings
+       ↓
+Retrieve relevant transcript segments
+       ↓
+Build context
+       ↓
+AI analysis
+24. Meeting Relationship
+
+Các loại relationship:
+
+FOLLOW_UP
+CONTINUES
+REFERENCES
+RELATED
+DEPENDS_ON
+CONTRADICTS
+REPLACES
+
+Ví dụ:
+
+Sprint Planning Aug 22
+        │
+        │ CONTINUES
+        ↓
+Sprint Planning Aug 25
+25. Related Meetings
+Related Meetings
+
+🔵 Strongly Related
+
+Sprint Planning · Aug 22
+Same project + follow-up
+
+Backend Review · Aug 24
+Shared API topic
+
+🟡 Possibly Related
+
+Product Strategy · Aug 18
+Similar topic
+
+Mỗi relationship phải có lý do.
+
+26. Meeting Timeline
+
+Hiển thị tiến trình của một chủ đề:
+
+LOGIN API
+
+Aug 20
+Problem detected
+      ↓
+Aug 22
+Deadline Aug 28
+      ↓
+Aug 24
+Still incomplete
+      ↓
+Aug 25
+Deadline moved Aug 30
+
+Đây là tính năng rất quan trọng để hiểu evolution của một vấn đề.
+
+27. Decision Tracking
+
+Mỗi decision:
+
+Decision
+├── Content
+├── Created at
+├── Created by
+├── Source meeting
+├── Timestamp
+├── Related decisions
+└── Status
+
+Status:
+
+ACTIVE
+CHANGED
+REPLACED
+CANCELLED
+COMPLETED
+28. Decision Change Detection
+
+Ví dụ:
+
+Aug 22
+API deadline = Aug 28
+
+        ↓
+
+Aug 25
+API deadline = Aug 30
+
+AI:
+
+⚠️ Decision Changed
+
+API deadline
+
+Aug 28 → Aug 30
+
+Changed during:
+Sprint Planning · Aug 25
+29. Action Item Lifecycle
+Created
+ ↓
+Assigned
+ ↓
+In Progress
+ ↓
+Completed
+
+Hoặc:
+
+Created
+ ↓
+Overdue
+ ↓
+Discussed again
+ ↓
+Deadline changed
+30. Action Item Tracking
+
+Ví dụ:
+
+☐ Complete Login API
+
+Owner:
+Nam
+
+Due:
+Aug 25
+
+Source:
+Backend Review · Aug 20
+
+Meeting Aug 25:
+
+Nam:
+"Login API vẫn chưa xong."
+
+AI:
+
+⚠️ Action Item Overdue
+
+Login API
+Owner: Nam
+Original deadline: Aug 25
+Status: Still incomplete
+31. Cross-Team Dependency
+
+Ví dụ:
+
+Mobile Team
+      │
+      │ DEPENDS_ON
+      ↓
+Backend Team
+      │
+      ↓
+Login API
+
+AI phát hiện:
+
+Backend delay
+     ↓
+Login API delay
+     ↓
+Mobile integration delay
+
+Nhưng đây phải được đánh dấu:
+
+AI inference / Potential impact
+
+không phải fact nếu chưa có người xác nhận.
+
+32. Team Management
+Teams
+
+Mobile Team
+8 members
+34 meetings
+
+Backend Team
+10 members
+52 meetings
+
+Product Team
+6 members
+27 meetings
+
+Sales Team
+12 members
+31 meetings
+33. Team Relationship
+
+Team có thể:
+
+Mobile
+   │
+   ├── DEPENDS_ON → Backend
+   │
+   ├── COLLABORATES_WITH → Product
+   │
+   └── SHARES_PROJECT → QA
+
+Relationship có thể do:
+
+User tạo.
+AI đề xuất.
+User xác nhận.
+
+AI không tự khẳng định quan hệ tổ chức nếu không có evidence.
+
+34. Project
+
+Một Project có thể có nhiều Team.
+
+Mobile App
+│
+├── Mobile Team
+├── Backend Team
+├── Product Team
+└── QA Team
+
+Một Team có thể tham gia nhiều Project.
+
+35. Project Intelligence
+
+Project page:
+
+Mobile App
+
+Teams
+Mobile · Backend · Product · QA
+
+Meetings
+42
+
+Decisions
+27
+
+Action Items
+18
+
+Open Questions
+7
+
+Dependencies
+3
+
+Risks
+4
+36. Knowledge Graph
+
+Mô hình:
+
+Person
+  ↕
+Team
+  ↕
+Project
+  ↕
+Meeting
+  ↕
+Topic
+  ↕
+Decision
+  ↕
+Action
+
+Graph có thể mở rộng:
+
+Meeting A
+   ├── RELATED → Meeting B
+   ├── REFERENCES → Decision C
+   ├── CREATES → Task D
+   └── CONTINUES → Meeting E
+37. Knowledge Graph UI
+                 Product
+                    │
+                    ↓
+                Mobile App
+               /     |     \
+              /      |      \
+          Mobile   Backend    QA
+             \       /
+              \     /
+             Login API
+                 │
+                 ↓
+              Decision
+                 │
+                 ↓
+                Nam
+
+User có thể:
+
+Zoom.
+Pan.
+Click entity.
+Xem relationship.
+Xem source.
+Play audio source.
+38. Search
+
+Search hỗ trợ:
+
+Keyword
+API
+deadline
+Nam
+Mobile
+Semantic
+Ai phụ trách backend?
+Những cuộc họp nào nói về deadline release?
+Các decision nào đã bị thay đổi?
+39. Ask AI
+
+User hỏi:
+
+"Tại sao deadline Mobile App bị trễ?"
+
+AI trả:
+
+Deadline bị ảnh hưởng bởi Login API.
+
+Evidence:
+
+1. Backend Review — Aug 24
+   Login API chưa hoàn thành.
+
+2. Mobile Meeting — Aug 24
+   Mobile đang chờ API.
+
+3. Sprint Planning — Aug 25
+   API deadline được chuyển Aug 28 → Aug 30.
+
+Mỗi evidence:
+
+[ View Meeting ]
+[ Go to timestamp ]
+[ Play Audio ]
+40. Cross-Team Questions
+
+Hệ thống phải trả lời được:
+
+Team nào đang phụ thuộc Backend?
+
+Project nào đang bị ảnh hưởng bởi API?
+
+Những task nào đang chờ Product?
+
+Các meeting giữa Mobile và Backend trong tháng này?
+
+Quyết định nào của Product đã ảnh hưởng Mobile?
+
+41. Home Intelligence
+AI INSIGHTS
+
+⚠️ 3 overdue tasks
+
+⚠️ 2 decisions changed
+
+🔗 Backend → Mobile dependency
+
+📌 5 upcoming follow-ups
+
+👤 Nam has 4 open action items
+
+📈 Mobile App has 3 unresolved issues
+42. Meeting Detail
+Sprint Planning
+Aug 25 · 58 min
+
+TEAM
+Mobile Team
+
+PROJECT
+Mobile App
+
+PARTICIPANTS
+KCT · Nam · Linh
+
+RELATED MEETINGS
+6
+
+CONTINUES FROM
+Sprint Planning · Aug 22
+
+REFERENCES
+Backend Review · Aug 24
+
+────────────────────
+
+✨ SUMMARY
+
+KEY POINTS
+
+DECISIONS
+
+ACTION ITEMS
+
+OPEN QUESTIONS
+
+RISKS
+
+TRANSCRIPT
+43. AI Source & Evidence
+
+Mọi insight quan trọng phải có nguồn.
+
+Decision:
+Deploy Friday
+
+Source:
+Sprint Planning
+Aug 25
+10:32
+
+[ View Transcript ]
+[ ▶ Play Audio ]
+
+AI phải phân biệt:
+
+FACT
+USER CONFIRMED
+AI INFERENCE
+UNCERTAIN
+44. AI Rules
+
+AI không được:
+
+Bịa nội dung.
+Tự tạo deadline.
+Tự gán người.
+Tự biến proposal thành decision.
+Tự xác định team relationship không có căn cứ.
+Tự xác nhận Unknown Speaker.
+Tự kết luận dependency chỉ dựa trên việc hai team xuất hiện cùng meeting.
+
+AI phải:
+
+Có source.
+Có timestamp.
+Có confidence.
+Có reasoning ngắn khi relationship được tạo.
+Cho user xác nhận những thông tin không chắc.
+45. Privacy
+
+Dữ liệu cần bảo vệ:
+
+Audio.
+Transcript.
+Voice Profile.
+Voice embedding.
+Meeting content.
+Team information.
+Project information.
+
+Yêu cầu:
+
+✓ Encryption in transit
+✓ Encryption at rest
+✓ Access control
+✓ Delete audio
+✓ Delete transcript
+✓ Delete voice profile
+✓ Export data
+✓ Account deletion
+✓ Consent for voice enrollment
+
+Voice Profile phải có:
+
+[ Delete Voice Profile ]
+
+và việc sử dụng giọng nói để nhận diện phải được thông báo rõ cho người dùng và tuân thủ quy định pháp luật áp dụng.
+
+46. Workspace Permission
+Owner
+Admin
+Member
+Viewer
+
+Quyền:
+
+View meeting
+Record meeting
+Edit transcript
+View audio
+View voice profiles
+Manage team
+Export data
+Delete meeting
+
+Voice data nên có permission riêng.
+
+47. Database
+users
+
+workspaces
+workspace_members
+
+teams
+team_members
+team_relationships
+
+people
+voice_profiles
+
+projects
+project_teams
+
+meetings
+meeting_participants
+meeting_relationships
+
+audio_files
+transcripts
+transcript_segments
+
+topics
+meeting_topics
+
+decisions
+decision_history
+
+action_items
+action_item_history
+
+questions
+risks
+
+entities
+entity_relationships
+
+ai_insights
+ai_sources
+48. Meeting Relationship Schema
+meeting_relationships
+
+id
+source_meeting_id
+target_meeting_id
+type
+confidence
+reason
+evidence_ids
+created_by
+created_at
+49. Processing Architecture
+                  Mobile
+                    │
+                    ▼
+               API Gateway
+                    │
+                    ▼
+               Upload Audio
+                    │
+                    ▼
+                Job Queue
+                    │
+        ┌───────────┼────────────┐
+        ↓           ↓            ↓
+     Audio       Speaker       STT
+   Processing   Processing
+        │           │            │
+        └───────────┼────────────┘
+                    ↓
+             Context Engine
+                    ↓
+          Historical Retrieval
+                    ↓
+             Meeting Graph
+                    ↓
+                AI Engine
+                    ↓
+          Structured Meeting
+                    ↓
+                Database
+50. Technology Stack
+Mobile
+
+Flutter
+
+Flutter
+ ├── iOS
+ └── Android
+
+Native bridge khi cần:
+
+Audio capture.
+Background audio.
+Audio session.
+Low-level microphone APIs.
+Backend
+Python
+FastAPI
+PostgreSQL
+Redis
+Object Storage
+Vector Database
+AI
+
+Có thể tách thành:
+
+STT
+Speaker Diarization
+Speaker Embedding
+LLM
+Embedding Model
+
+Model/provider có thể thay đổi độc lập thông qua service layer.
+
+51. Vector / Semantic Search
+Transcript
+     ↓
+Chunk
+     ↓
+Embedding
+     ↓
+Vector DB
+
+Lưu:
+
+meeting_id
+segment_id
+embedding
+metadata
+
+Metadata:
+
+team
+project
+speaker
+timestamp
+date
+topic
+52. Processing State
+UPLOADING
+      ↓
+PROCESSING_AUDIO
+      ↓
+DIARIZING
+      ↓
+IDENTIFYING_SPEAKERS
+      ↓
+TRANSCRIBING
+      ↓
+RETRIEVING_CONTEXT
+      ↓
+ANALYZING
+      ↓
+BUILDING_RELATIONSHIPS
+      ↓
+COMPLETED
+53. Error States
+Audio thấp
+⚠️ Audio quality is low
+Speaker không xác định
+⚠️ Unknown Speaker
+[ Identify ]
+AI không chắc
+AI confidence is low
+[ Review ]
+Historical context không tìm thấy
+No related meetings found.
+
+Không được suy đoán rằng meeting không liên quan chỉ vì không tìm thấy dữ liệu.
+
+54. Export
+
+Formats:
+
+PDF
+DOCX
+Markdown
+TXT
+CSV
+
+Có thể export:
+
+☑ Summary
+☑ Key Points
+☑ Decisions
+☑ Action Items
+☑ Questions
+☑ Risks
+☑ Transcript
+☐ Audio
+☑ Sources
+55. Calendar / Task Integration
+
+Phase sau:
+
+Meeting
+ ↓
+Action Item
+ ↓
+Task Manager
+
+Ví dụ:
+
+Nam
+Complete API
+Due Aug 30
+
+→ tạo task.
+
+Calendar:
+
+Meeting
+ ↓
+Calendar event
+ ↓
+Pre-meeting reminder
+56. Live Meeting AI
+
+V2:
+
+Microphone
+ ↓
+Streaming Audio
+ ↓
+Streaming STT
+ ↓
+Speaker Recognition
+ ↓
+Realtime Context
+ ↓
+AI
+
+Có thể hiển thị:
+
+✨ Potential Decision
+
+Team agrees to move deployment
+to Friday.
+
+[ Confirm ]
+[ Ignore ]
+57. Meeting Memory Timeline
+
+Mỗi project có timeline:
+
+PROJECT: Mobile App
+
+Aug 18
+Product Strategy
+
+Aug 20
+Sprint Planning
+
+Aug 22
+Backend Integration
+
+Aug 24
+UX Review
+
+Aug 25
+Sprint Planning
+
+Click một topic:
+
+LOGIN API
+
+→ xem toàn bộ lịch sử.
+
+58. Topic Memory
+
+Một Topic có:
+
+Topic
+├── First mentioned
+├── Last mentioned
+├── Meetings
+├── People
+├── Teams
+├── Decisions
+├── Tasks
+├── Status
+└── Related topics
+
+Ví dụ:
+
+Login API
+
+First mentioned: Aug 20
+Last mentioned: Aug 25
+
+Status: At Risk
+
+Teams:
+Mobile
+Backend
+
+Open Tasks: 2
+Decisions: 3
+59. Risk Detection
+
+AI có thể phát hiện tín hiệu:
+
+⚠️ Risk
+
+Login API has been discussed
+in 4 meetings without completion.
+
+Evidence:
+Aug 20
+Aug 22
+Aug 24
+Aug 25
+
+Đây là AI insight, không phải fact tuyệt đối.
+
+60. Team Dashboard
+MOBILE TEAM
+
+Members       8
+Meetings      34
+Projects       4
+
+Open Tasks    12
+Overdue        3
+
+Decisions     27
+Open Questions 6
+
+Dependencies
+
+→ Backend
+→ Product
+61. Project Dashboard
+MOBILE APP
+
+Teams
+Mobile / Backend / Product / QA
+
+Meetings
+42
+
+Topics
+28
+
+Decisions
+31
+
+Tasks
+18
+
+Risks
+4
+
+Dependencies
+3
+62. People Intelligence
+NAM
+
+Teams
+Backend
+
+Projects
+Mobile App
+API Platform
+
+Meetings
+14
+
+Open Tasks
+4
+
+Completed Tasks
+21
+
+Voice Recognition
+94%
+
+Có thể hỏi:
+
+"Nam đã cam kết làm gì trong 2 tuần qua?"
+
+63. AI Query Engine
+
+Query:
+
+"Nam đã cam kết làm gì?"
+
+Pipeline:
+
+Question
+ ↓
+Entity extraction
+ ↓
+People = Nam
+ ↓
+Time range
+ ↓
+Search Action Items
+ ↓
+Search Transcript
+ ↓
+Cross-check Decisions
+ ↓
+Answer
+ ↓
+Attach sources
+64. Cross-Team Query
+
+Ví dụ:
+
+"Backend đang ảnh hưởng những project nào?"
+
+AI:
+
+Backend Team
+│
+├── Mobile App
+│   └── Login API
+│
+├── CRM
+│   └── Customer API
+│
+└── Internal Tools
+
+Mỗi kết quả phải có evidence.
+
+65. UX Principles
+1. AI trước, transcript sau
+
+Người dùng mở meeting phải thấy:
+
+Summary
+Decisions
+Tasks
+
+trước:
+
+Transcript
+2. Everything is editable
+
+AI không phải nguồn sự thật tuyệt đối.
+
+3. Everything important has evidence
+
+Decision / task / relationship → source.
+
+4. Không ép relationship
+
+Không có evidence → không tự liên kết.
+
+5. Unknown là trạng thái hợp lệ
+
+Không cố đoán speaker.
+
+66. MVP Scope
+P0
+✓ Authentication
+✓ Workspace
+✓ Home
+✓ New Meeting
+✓ Record
+✓ Import Audio
+✓ Audio Processing
+✓ STT
+✓ Speaker Diarization
+✓ Voice Profile
+✓ Speaker Recognition
+✓ Unknown Speaker
+✓ Relevance Filtering
+✓ Transcript
+✓ Summary
+✓ Key Points
+✓ Decisions
+✓ Action Items
+✓ Meeting History
+✓ Search
+✓ Export
+✓ Privacy
+P1
+✓ Teams
+✓ Projects
+✓ Related Meetings
+✓ Historical Context
+✓ Decision History
+✓ Action Item Tracking
+✓ Semantic Search
+✓ Ask Meeting AI
+✓ Knowledge Graph
+✓ Cross-Team Relationship
+P2
+✓ Live Transcript
+✓ Realtime AI
+✓ Calendar
+✓ Task integration
+✓ Slack / Teams
+✓ Workspace collaboration
+✓ Advanced analytics
+67. Acceptance Criteria
+Recording
+Có thể record trên iOS.
+Có thể record trên Android.
+Pause/resume.
+Stop/save.
+Import audio.
+Không mất recording khi app xử lý.
+Speaker
+Tách speaker.
+Gán speaker.
+Rename speaker.
+Voice Profile.
+Speaker recognition.
+Unknown speaker.
+User correction.
+Audio
+Noise suppression.
+VAD.
+Echo reduction.
+Speech enhancement.
+Xử lý được background speech ở mức phù hợp.
+AI
+Summary.
+Key points.
+Decision.
+Action item.
+Owner.
+Deadline.
+Questions.
+Risks.
+Historical context.
+Knowledge
+Group meeting.
+Team.
+Project.
+Related meetings.
+Decision history.
+Action history.
+Cross-team relationship.
+Evidence/source.
+68. Product Differentiator
+
+Sản phẩm không phải:
+
+"Một app ghi âm có AI."
+
+Mà là:
+
+"Một bộ nhớ AI cho toàn bộ các cuộc họp của cá nhân hoặc tổ chức."
+
+Hệ thống hiểu:
+
+WHO
+↓
+Ai nói?
+
+WHERE
+↓
+Team nào?
+
+WHAT
+↓
+Nói về project nào?
+
+WHEN
+↓
+Nói lúc nào?
+
+CONTEXT
+↓
+Liên quan cuộc họp nào trước?
+
+DECISION
+↓
+Đã quyết định gì?
+
+CHANGE
+↓
+Quyết định có thay đổi không?
+
+ACTION
+↓
+Ai phải làm gì?
+
+DEPENDENCY
+↓
+Team/project nào bị ảnh hưởng?
+
+MEMORY
+↓
+Toàn bộ lịch sử
+Kiến trúc cuối cùng
+                         ┌─────────────┐
+                         │  WORKSPACE  │
+                         └──────┬──────┘
+                                │
+              ┌─────────────────┼─────────────────┐
+              ↓                 ↓                 ↓
+            PEOPLE             TEAMS           PROJECTS
+              │                 │                 │
+              │                 └────────┬────────┘
+              │                          │
+              ↓                          ↓
+        VOICE PROFILE              MEETING GROUPS
+              │                          │
+              └────────────┬─────────────┘
+                           ↓
+                       MEETINGS
+                           │
+             ┌─────────────┼─────────────┐
+             ↓             ↓             ↓
+          SPEAKERS      TRANSCRIPT      AUDIO
+             │             │
+             └──────┬──────┘
+                    ↓
+              AI CONTEXT ENGINE
+                    │
+        ┌───────────┼────────────┐
+        ↓           ↓            ↓
+      TOPICS     DECISIONS     ACTIONS
+        │           │            │
+        └───────────┼────────────┘
+                    ↓
+             KNOWLEDGE GRAPH
+                    │
+        ┌───────────┼────────────┐
+        ↓           ↓            ↓
+   HISTORICAL    RELATED      CROSS-TEAM
+    MEETINGS     MEETINGS    RELATIONSHIPS
+        │           │            │
+        └───────────┼────────────┘
+                    ↓
+              AI MEMORY LAYER
+                    │
+          ┌─────────┼─────────┐
+          ↓         ↓         ↓
+       SEARCH     ASK AI    INSIGHTS
+
+Đây là scope BRD nên dùng làm baseline để bắt đầu thiết kế database + API + Flutter UI. Điểm cần giữ xuyên suốt architecture là Meeting không phải entity cuối cùng; Meeting chỉ là một nguồn dữ liệu trong một knowledge graph liên tục theo People → Team → Project → Topic → Decision → Action → Meeting history.
+
+Analysis paused
+from pathlib import Path
+import zipfile
+
+brd = r"""# BRD — AI Meeting Intelligence Platform
+
+**Version:** 2.0  
+**Status:** Product Requirements / Full BRD  
+**Platforms:** iOS, Android  
+**Primary language:** Vietnamese  
+**Architecture target:** Mobile-first, offline-capable, cloud AI processing, entity/event/relationship/memory based
+
+---
+
+## 1. Product Vision
+
+AI Meeting Intelligence là ứng dụng trợ lý cuộc họp có khả năng lắng nghe cuộc họp, nhận diện người nói, lọc nội dung không liên quan, chuyển giọng nói thành văn bản, hiểu ngữ cảnh, ghi nhớ lịch sử và liên kết các cuộc họp theo người, team, project, topic, decision và action.
+
+Sản phẩm không chỉ là:
+
+> App ghi âm + Speech-to-Text + Summary.
+
+Mà là:
+
+> **Bộ nhớ AI liên tục cho cá nhân, team và tổ chức.**
+
+Core loop:
+
+```text
+RECORD
+  ↓
+LISTEN
+  ↓
+IDENTIFY
+  ↓
+UNDERSTAND
+  ↓
+CONNECT
+  ↓
+REMEMBER
+  ↓
+FOLLOW UP
+  ↓
+ACT
+2. Problem Statement
+
+Các app meeting note hiện tại thường xử lý từng cuộc họp độc lập:
+
+Audio → Transcript → Summary
+
+Điều này làm mất phần quan trọng nhất của meeting intelligence:
+
+Ai đã nói?
+Người đó thuộc team nào?
+Đang nói về project nào?
+Đây có phải vấn đề đã được nói ở meeting trước?
+Quyết định này có thay thế quyết định cũ không?
+Ai đã cam kết làm gì?
+Deadline đã thay đổi chưa?
+Team nào phụ thuộc team nào?
+Câu hỏi nào vẫn chưa được giải quyết?
+Nội dung nào cần ghi nhớ lâu dài?
+Có mâu thuẫn giữa các cuộc họp không?
+
+Sản phẩm phải biến:
+
+Meeting 1
+Meeting 2
+Meeting 3
+...
+Meeting N
+
+thành một hệ thống knowledge có liên kết.
+
+3. Goals
+3.1 Product Goals
+Ghi âm ổn định trên iOS/Android.
+Hoạt động khi offline.
+Cải thiện chất lượng âm thanh.
+Nhận diện và tách người nói.
+Cho phép gán tên cho giọng nói.
+Lưu Voice Profile để sử dụng cho các meeting sau.
+Tự nhận diện người nói ở meeting mới.
+Phát hiện Unknown Speaker.
+Phân biệt người nói liên quan và âm thanh không liên quan.
+Chuyển audio thành transcript có timestamp.
+Tự động tạo summary.
+Trích xuất topics, decisions, actions, questions, risks.
+Mapping với các meeting trước.
+Group meeting theo team/project.
+Cho phép một meeting thuộc nhiều team/project.
+Phát hiện quan hệ giữa team.
+Theo dõi lịch sử decision.
+Theo dõi lifecycle của action item.
+Theo dõi câu hỏi chưa giải quyết.
+Xây dựng knowledge graph.
+Cho phép hỏi AI dựa trên lịch sử.
+Luôn cung cấp evidence/source cho insight quan trọng.
+Có cơ chế user correction.
+Có privacy, consent, retention và delete.
+Có khả năng mở rộng sang Calendar, Documents, Jira, Linear, Slack, Teams.
+4. Non-Goals
+
+MVP không bắt buộc:
+
+Tự động đánh giá hiệu suất nhân viên.
+Tự động gửi email/tin nhắn ra ngoài mà không có review.
+Tự động merge người dùng khi confidence thấp.
+Tự động coi AI inference là fact.
+Tự động xóa nội dung low relevance ngay lập tức.
+Screen recording trong MVP.
+Full enterprise analytics trong MVP.
+Tự động training model từ dữ liệu cá nhân mà không có policy/consent rõ ràng.
+5. Target Users
+Individual
+Developer
+Designer
+Product Manager
+Manager
+Sales
+Consultant
+Freelancer
+Team
+Startup
+Software team
+Product team
+Marketing
+Sales
+Agency
+Project team
+Enterprise
+Công ty nhiều phòng ban
+Nhiều team
+Nhiều project
+Nhiều cuộc họp chéo team
+6. Core Concepts
+6.1 Workspace
+
+Không gian dữ liệu của cá nhân/team/company.
+
+6.2 Person
+
+Người tham gia meeting.
+
+6.3 Voice Profile
+
+Hồ sơ giọng nói dùng để nhận diện người nói.
+
+6.4 Team
+
+Nhóm người có quan hệ công việc.
+
+6.5 Project
+
+Đơn vị công việc có thể liên quan nhiều team.
+
+6.6 Meeting
+
+Một phiên họp.
+
+6.7 Topic
+
+Chủ đề được thảo luận.
+
+6.8 Decision
+
+Một quyết định được đưa ra hoặc xác nhận.
+
+6.9 Action Item
+
+Công việc được giao.
+
+6.10 Question
+
+Vấn đề/câu hỏi chưa giải quyết.
+
+6.11 Risk
+
+Rủi ro được phát hiện hoặc đề cập.
+
+6.12 Evidence
+
+Nguồn chứng minh cho AI output.
+
+6.13 Memory
+
+Thông tin được lưu để sử dụng cho các meeting sau.
+
+6.14 Relationship
+
+Quan hệ giữa các entity.
+
+7. Core Data Model
+Workspace
+│
+├── People
+│   └── Voice Profiles
+│
+├── Teams
+│
+├── Projects
+│
+├── Meetings
+│   ├── Participants
+│   ├── Audio
+│   ├── Transcript
+│   ├── Topics
+│   ├── Decisions
+│   ├── Actions
+│   ├── Questions
+│   └── Risks
+│
+├── Documents
+│
+├── Memories
+│
+└── Relationships
+
+Nguyên tắc kiến trúc:
+
+Không thiết kế chỉ theo Meeting → Transcript.
+
+Phải thiết kế theo:
+
+ENTITY
++
+EVENT
++
+RELATIONSHIP
++
+EVIDENCE
++
+MEMORY
+8. User Journey
+Install App
+ ↓
+Create Account
+ ↓
+Create / Join Workspace
+ ↓
+Setup Profile
+ ↓
+Optional Voice Enrollment
