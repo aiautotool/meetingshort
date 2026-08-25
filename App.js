@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, FlatList, Modal, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAudioPlayer, requestRecordingPermissionsAsync, setAudioModeAsync } from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -146,12 +146,14 @@ export default function App() {
   }
 
   return <SafeAreaView style={styles.safe}>
-    <StatusBar barStyle="dark-content" />
+    <StatusBar barStyle="light-content" />
+    <KeyboardAvoidingView style={styles.keyboardAvoider} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={0}>
     {recording ? <Recorder title={title.trim() || 'Cuộc họp mới'} elapsed={elapsed} paused={paused} segments={liveSegments} error={liveError} onPause={togglePause} onStop={stopRecording} />
       : activeMeeting ? <MeetingDetails meeting={activeMeeting} onBack={() => setActiveMeeting(null)} onPlay={() => playAudio(activeMeeting)} onDelete={() => removeMeeting(activeMeeting)} />
         : <><Main tab={tab} meetings={meetings} onOpen={setActiveMeeting} onRecord={() => setComposerOpen(true)} /><Nav tab={tab} onChange={setTab} /></>}
     {!recording && !activeMeeting && <Pressable style={styles.fab} onPress={() => setComposerOpen(true)}><Text style={styles.fabText}>＋</Text></Pressable>}
-    <Modal visible={composerOpen} transparent animationType="slide" onRequestClose={() => setComposerOpen(false)}><View style={styles.overlay}><View style={styles.sheet}><View style={styles.handle} /><Text style={styles.sheetTitle}>Bắt đầu cuộc họp</Text><Text style={styles.muted}>Transcript realtime chạy hoàn toàn trên iPhone.</Text><TextInput value={title} onChangeText={setTitle} autoFocus placeholder="Tên cuộc họp" style={styles.input} /><Pressable style={styles.primary} onPress={beginRecording}><Text style={styles.primaryText}>●  Ghi âm & transcript realtime</Text></Pressable><Pressable style={styles.textButton} onPress={() => setComposerOpen(false)}><Text>Huỷ</Text></Pressable></View></View></Modal>
+    </KeyboardAvoidingView>
+    <Modal visible={composerOpen} transparent animationType="slide" onRequestClose={() => setComposerOpen(false)}><KeyboardAvoidingView style={styles.keyboardAvoider} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}><View style={styles.overlay}><View style={styles.sheet}><View style={styles.handle} /><Text style={styles.sheetTitle}>Bắt đầu cuộc họp</Text><Text style={styles.muted}>Transcript realtime chạy hoàn toàn trên iPhone.</Text><TextInput value={title} onChangeText={setTitle} autoFocus placeholder="Tên cuộc họp" placeholderTextColor="#71849B" style={styles.input} /><Pressable style={styles.primary} onPress={beginRecording}><Text style={styles.primaryText}>●  Ghi âm & transcript realtime</Text></Pressable><Pressable style={styles.textButton} onPress={() => setComposerOpen(false)}><Text style={styles.cancelText}>Huỷ</Text></Pressable></View></View></KeyboardAvoidingView></Modal>
   </SafeAreaView>;
 }
 
@@ -214,4 +216,9 @@ Object.assign(styles, StyleSheet.create({
   detailTitle: { color: '#E8F6FF', fontWeight: '800' }, detailName: { color: '#F3FAFF', fontSize: 20, fontWeight: '800', marginTop: 22 }, back: { fontSize: 32, lineHeight: 32, color: '#D9F6FF' }, tabs: { flexDirection: 'row', gap: 20, borderBottomWidth: 1, borderColor: '#163047', marginTop: 19 }, tabOn: { color: '#45E3FF', paddingBottom: 10, borderBottomWidth: 2, borderColor: '#00D6FF', fontSize: 11, fontWeight: '800' }, tabText: { color: '#8496AA', paddingBottom: 11, fontSize: 11 }, sectionTitle: { color: '#E8F6FF', fontSize: 15, fontWeight: '800', marginTop: 18, marginBottom: 9 }, summaryText: { color: '#AFC0D2', fontSize: 13, lineHeight: 19 }, processing: { padding: 12, backgroundColor: '#08243A', borderWidth: 1, borderColor: '#0E577C', borderRadius: 10, marginBottom: 7 }, processingTitle: { color: '#59E4FF', fontWeight: '800', fontSize: 13, marginBottom: 4 },
   listenButton: { borderColor: '#16CAE8', borderWidth: 1, backgroundColor: '#082437', borderRadius: 10, padding: 11, alignItems: 'center', marginBottom: 5 }, listenText: { color: '#6CEBFF', fontWeight: '800' }, transcriptRow: { flexDirection: 'row', gap: 10, paddingVertical: 11, borderBottomWidth: 1, borderColor: '#11243A' }, speaker: { color: '#D9F6FF', fontSize: 12, fontWeight: '800' }, time: { color: '#6E849C', fontSize: 11 }, transcriptText: { color: '#B5C8DB', fontSize: 13, lineHeight: 18, marginTop: 3 },
   personRow: { flexDirection: 'row', alignItems: 'center', gap: 11, paddingVertical: 13, borderBottomWidth: 1, borderColor: '#11243A' }, voice: { color: '#BA75FF', textShadowColor: '#6E2BFF', textShadowRadius: 6 }, add: { color: '#54E4FF', fontSize: 13, fontWeight: '700' }, projectRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 13, marginTop: 8, backgroundColor: '#091422', borderWidth: 1, borderColor: '#132941', borderRadius: 11 }, chevron: { fontSize: 24, color: '#5D7895' }, newProject: { backgroundColor: '#082A43', borderWidth: 1, borderColor: '#115778', padding: 14, alignItems: 'center', borderRadius: 11, marginTop: 25 }, error: { color: '#FF8091', fontSize: 12, marginTop: 7 }, deleteText: { color: '#FF7184', fontWeight: '700' },
+}));
+
+Object.assign(styles, StyleSheet.create({
+  keyboardAvoider: { flex: 1 },
+  cancelText: { color: '#83EFFF', fontWeight: '700' },
 }));
